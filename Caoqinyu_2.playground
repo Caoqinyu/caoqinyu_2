@@ -1,0 +1,197 @@
+import UIKit
+//定义数组
+let dictionary=[["name":"haha","age":18],["name":"xixi","age":20]]
+//用map函数返回name字符串数组
+let name=dictionary.map({ $0["name"]! })
+print(name)
+let stringarray=["1","s","haha","*","12"]
+//filter函数选出能被转成Int的字符串
+let chosenum=stringarray.filter{Int($0) != nil}
+print(chosenum)
+let array1=["hello","my","name","is","caoqinyu"]
+// reduce函数
+let connectstring=array1.reduce(""){
+    connectstring,letter in"\(connectstring),\(letter)"
+}
+print("\(connectstring)")
+let staarray=[1,7,4,4,3,2,5]//选出最大值，最小值，求和
+let stamax=staarray.reduce(staarray[0],{$0 > $1 ? $0 : $1})
+print(stamax)
+let stamin=staarray.reduce(staarray[0],{$0 < $1 ? $0 : $1})
+print(stamin)
+let stasum=staarray.reduce(0){$0+$1}
+print(stasum)
+func f1(a: Int) -> Int {
+    return a
+}  //函数类型为(Int) -> Int
+func f2(a: String) -> Int {
+    return Int(a)!
+}  //函数类型为(String) -> Int
+func f3() -> Int {
+    return 2
+}  //函数类型为() -> Int
+func f4(a: Int) {
+    
+}  //函数类型为(Int) -> Void
+func f5(a: Int) -> Int {
+    return a + 1
+}  //函数类型为(Int) -> Int
+let funArr: [Any] = [f1, f2, f3, f4, f5]
+for (index, value) in funArr.enumerated() {//调用数组的enumerated()方法
+    if value is (Int) -> Int {
+        print(index)  //输出类型为(Int) -> Int的函数在数组中的下标，
+    }
+}
+//泛型函数
+func search<T:Comparable>(data:[T])->(max:T,min:T){
+    var max=data[0]
+    var min=data[0]
+    for i in data{
+        if max<i{max=i}
+        else if min>i {min=i}
+    }
+    return (max,min)
+}
+//测试泛型函数
+let intsearch=search(data:[1,2,3,4,7])
+let floatsearch=search(data:[1.0,2.0,3.1,4.6,7.5])
+let stringsearch=search(data:["A","B","C"])
+print("\(intsearch.min),\(intsearch.max)")
+print("\(floatsearch.min),\(floatsearch.max)")
+print("\(stringsearch.min),\(stringsearch.max)")
+
+enum Gender:Int{
+    case male
+    case female
+    static func>(a1:Gender,a2:Gender)->Bool{
+        return a1.rawValue<a2.rawValue}
+};
+//新建枚举
+enum Department:String{
+    case teacher
+    case student
+}
+//新建协议
+protocol SchoolProtocol{
+    func lendbook()
+    var department:Department{get set}
+}
+class Person: CustomStringConvertible{
+    var firstName:String
+    var lastName:String
+    var age:Int
+    var gender:Gender
+    var fullName:String{
+        get{return firstName+lastName}
+    }
+    init(firstName:String,lastName:String,age:Int,gender:Gender){
+        self.lastName=lastName
+        self.firstName=firstName
+        self.age=age
+        self.gender=gender
+    }
+    convenience init(firstName:String,lastName:String){
+        self.init(firstName: firstName, lastName: lastName,age:0,gender:Gender.male)
+    }
+    static func ==(a1:Person,a2:Person)->Bool{
+        return a1.fullName==a2.fullName
+    }
+    static func !=(a1:Person,a2:Person)->Bool{
+        return !(a1==a2)
+    }
+    var description:String{
+        return "全名:\(fullName)年龄:\(age)性别:\(gender)"
+    }
+    //构造run函数
+    func run(){
+        print("Person\(self.fullName) is running")
+    }
+}
+class Teacher:Person,SchoolProtocol{//继承协议
+    var title:String
+    var department:Department
+    init(firstName: String, lastName: String, age: Int, gender: Gender,title:String) {
+        self.department=Department.teacher
+        self.title=title
+        super.init(firstName: firstName, lastName: lastName, age: age, gender: gender)
+    }
+    convenience init(firstName:String,lastName:String){
+        self.init(firstName: firstName, lastName: lastName, age: 20, gender:.male, title: "hi")
+    }
+    override var description: String{
+        return "标题:\(title)\(super.description)"
+    }
+    //重写run函数
+    override func run() {
+        print("Teacher\(self.fullName) is running")
+    }
+    func lendbook() {
+        print("Teacher\(self.fullName) is lending book!")
+    }
+}
+class Student: Person,SchoolProtocol{
+    var stuNo:Int
+    var department:Department
+    init(firstName: String, lastName: String, age: Int, gender: Gender,stuNo:Int) {
+        self.stuNo=stuNo
+        self.department=Department.student
+        super.init(firstName: firstName, lastName: lastName, age: age, gender: gender)
+    }
+    convenience init(firstName: String, lastName: String) {
+        self.init(firstName: firstName, lastName: lastName, age: 20, gender: .female, stuNo: 101)
+    }
+    override var description: String{
+        return "\(super.description)学号:\(stuNo)"
+    }
+    //重写run函数
+    override func run() {
+        print("Student\(self.fullName) is running")
+    }
+    func lendbook() {
+        print("Teacher\(self.fullName) is lending book!")
+    }
+}
+var p1=Person(firstName: "cao", lastName: "qin", age: 18, gender: .male)
+var p2=Person(firstName: "cao", lastName: "yu", age: 20, gender: .female)
+var t1=Teacher(firstName: "bao", lastName: "bei", age: 18, gender: .male, title: "hello")
+var t2=Teacher(firstName: "bao", lastName: "xin", age: 20, gender: .female, title: "hi")
+var s1=Student(firstName: "chen", lastName: "ting", age: 18, gender: .male, stuNo: 101)
+var s2=Student(firstName: "chen", lastName: "ya", age: 20, gender: .female, stuNo: 102)
+print(p1)
+print(p1==p2)
+var persons=[Person]()
+persons.append(p1)
+persons.append(p2)
+persons.append(t1)
+persons.append(t2)
+persons.append(s1)
+persons.append(s2)
+var dictionary1=["Person":0,"Teacher":0,"Student":0]
+for traversearray in persons{
+    if traversearray is Student {dictionary1["Student"]! += 1}
+    else if traversearray is Teacher {dictionary1["Teacher"]! += 1}
+    else {dictionary1["Person"]! += 1}
+}
+print("输出字典内容：")
+for(key,value) in dictionary1{
+    print("\(key):\(value)个")
+}
+print("按age排序：")
+persons.sort(by: {return $0.age<$1.age})
+for traversearray in persons{print(traversearray)}
+print("按fullName排序：")
+persons.sort(by: {return $0.fullName<$1.fullName})
+for traversearray in persons{print(traversearray)}
+print("按gender+age排序：")
+persons.sort(by: {return ($0.gender>$1.gender)&&($0.age>$1.age)})
+for traversearray in persons{print(traversearray)}
+//对数组进行穷举
+for item in persons {
+    item.run()
+    if let teacher = item as? Teacher {
+        teacher.lendbook()
+    } else if let student = item as? Student {
+        student.lendbook()
+    }
+}
+
